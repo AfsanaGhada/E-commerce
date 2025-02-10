@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const User = require('./Model/User');
+const User = require('../Model/User');
 
 // Get all users
 router.get('/', async (req, res) => {
@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
   const JWT_SECRET = 'your_jwt_secret';
 
 //  Get All Users (Admin Only)
-router.get('/', authMiddleware, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     if (req.user.role !== 'admin') return res.status(403).json({ message: 'Access denied' });
 
@@ -84,7 +84,7 @@ router.post('/login', async (req, res) => {
 });
 
 //  Update User Profile
-router.patch('/update/:id', authMiddleware, async (req, res) => {
+router.patch('/update/:id', async (req, res) => {
   try {
     if (req.user.userId !== req.params.id && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Unauthorized' });
@@ -104,7 +104,7 @@ router.patch('/update/:id', authMiddleware, async (req, res) => {
 });
 
 //  Delete User (Self or Admin)
-router.delete('/delete/:id', authMiddleware, async (req, res) => {
+router.delete('/delete/:id', async (req, res) => {
   try {
     if (req.user.userId !== req.params.id && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Unauthorized' });
@@ -118,7 +118,7 @@ router.delete('/delete/:id', authMiddleware, async (req, res) => {
 });
 
 //  Block/Unblock User (Admin Only)
-router.patch('/block/:id', authMiddleware, async (req, res) => {
+router.patch('/block/:id', async (req, res) => {
   try {
     if (req.user.role !== 'admin') return res.status(403).json({ message: 'Access denied' });
 
@@ -135,7 +135,7 @@ router.patch('/block/:id', authMiddleware, async (req, res) => {
 });
 
 //  Get User Order History
-router.get('/order-history/:id', authMiddleware, async (req, res) => {
+router.get('/order-history/:id', async (req, res) => {
   try {
     if (req.user.userId !== req.params.id && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Unauthorized' });
@@ -149,7 +149,7 @@ router.get('/order-history/:id', authMiddleware, async (req, res) => {
 });
   
 //  Search Users (By Name, Email, or Role)
-router.get('/search', authMiddleware, async (req, res) => {
+router.get('/search', async (req, res) => {
   try {
     const { name, email, role } = req.query;
     let query = {};

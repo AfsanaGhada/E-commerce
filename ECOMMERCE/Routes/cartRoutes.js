@@ -1,14 +1,17 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const Cart = require('./Model/cart');  // Path to the Cart model file
-const Product = require('./Model/products');  // Path to the Product model file
-const User = require('./Model/user');  // Path to the User model file
+const Cart = require('../Model/Cart');  // Path to the Cart model file
+const Product = require('../Model/Products');  // Path to the Product model file
+const User = require('../Model/User');  // Path to the User model file
 const router = express.Router();
 
 // Get all carts
 router.get('/', async (req, res) => {
   try {
+    console.log("Hello world ");
+    
     const carts = await Cart.find().populate('user_id').populate('items.product_id');
+    console.log(carts)
     res.json(carts);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching carts', error: error.message });
