@@ -1,9 +1,9 @@
 const express = require('express');
+const multer = require('multer'); //  Ensure multer is imported
 const router = express.Router();
 const Product = require('../Model/Products');
-const multer = require('multer');
 
-// Multer setup for image uploads
+//  Rename 'upload' to 'productImageUpload' to avoid conflicts
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/'); // Save images to "uploads/" folder
@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + '-' + file.originalname);
   }
 });
-const upload = multer({ storage: storage });
+const productImageUpload = multer({ storage: storage }); //  Renamed
 
 //  Get All Products
 router.get('/', async (req, res) => {
@@ -47,27 +47,36 @@ router.get('/category/:categoryId', async (req, res) => {
 });
 
 //  Create New Product (With Image Upload)
-router.post('/create', upload.array('images', 5), async (req, res) => {
+router.post("/create", productImageUpload.array("images", 5), async (req, res) => {
   try {
     const { name, description, price, categories, stock } = req.body;
-    const imagePaths = req.files.map(file => file.path);
 
-    const newProduct = new Product({ name, description, price, categories, stock, images: imagePaths });
+    const imagePaths = req.files ? req.files.map((file) => file.path) : [];
+
+    const newProduct = new Product({
+      name,
+      description,
+      price,
+      categories,
+      stock,
+      images: imagePaths
+    });
+
     await newProduct.save();
-    res.status(201).json({ message: 'Product created successfully', product: newProduct });
+    res.status(201).json({ message: "Product created successfully", product: newProduct });
 
   } catch (error) {
-    res.status(500).json({ message: 'Error creating product', error: error.message });
+    res.status(500).json({ message: "Error creating product", error: error.message });
   }
 });
 
 //  Update Product (With Image Upload)
-router.patch('/update/:id', upload.array('images', 5), async (req, res) => {
+router.patch('/update/:id', productImageUpload.array('images', 5), async (req, res) => { // ✅ Use renamed productImageUpload
   try {
     const updatedData = req.body;
     updatedData.updated_at = Date.now();
     
-    if (req.files.length > 0) {
+    if (req.files && req.files.length > 0) {
       updatedData.images = req.files.map(file => file.path);
     }
 

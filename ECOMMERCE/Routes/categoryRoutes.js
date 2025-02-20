@@ -68,8 +68,8 @@ router.delete('/delete/:id', async (req, res) => {
   }
 });
 
-//  Search Category (by name or description)
-router.get('/search', async (req, res) => {
+// Search Category (by name or description)
+router.get('/find/search', async (req, res) => {
   try {
     const { name, description } = req.query;
     let query = {};
@@ -83,5 +83,10 @@ router.get('/search', async (req, res) => {
     res.status(500).json({ message: 'Error searching categories', error: error.message });
   }
 });
+
+
+
+
+
 
 module.exports = router;

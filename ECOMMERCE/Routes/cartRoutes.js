@@ -6,19 +6,26 @@ const User = require('../Model/User');  // Path to the User model file
 const router = express.Router();
 
 // Get all carts
+// Get all carts
 router.get('/', async (req, res) => {
   try {
-    console.log("Hello world ");
-    
-    const carts = await Cart.find().populate('user_id').populate('items.product_id');
-    console.log(carts)
+    const carts = await Cart.find(); // Fetch carts
+    console.log("Carts Found:", carts); // Log for debugging
+
+    if (carts.length === 0) {
+      return res.status(404).json({ message: "No carts found" });
+    }
+
     res.json(carts);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching carts', error: error.message });
+    console.error("Error fetching carts:", error);
+    res.status(500).json({ message: "Error fetching carts", error: error.message });
   }
 });
 
-// Get cart by user ID
+
+
+// Get cart by user I
 router.get('/user/:userId', async (req, res) => {
   try {
     const cart = await Cart.findOne({ user_id: req.params.userId }).populate('items.product_id');
@@ -127,12 +134,22 @@ router.delete('/delete/:cartId', async (req, res) => {
   }
 });
 
-// Search for products in the cart by name
-router.get('/search', async (req, res) => {
+router.get('/find/search', async (req, res) => {
   try {
     const query = req.query.name || '';
-    const cart = await Cart.find({ 'items.product_id.name': { $regex: query, $options: 'i' } }).populate('items.product_id');
-    res.json(cart);
+
+    // Fetch carts and populate product details
+    const carts = await Cart.find().populate('items.product_id');
+
+    // Filter products by name manually after population
+    const filteredCarts = carts.map(cart => ({
+      ...cart.toObject(),
+      items: cart.items.filter(item => 
+        item.product_id.name.toLowerCase().includes(query.toLowerCase())
+      )
+    })).filter(cart => cart.items.length > 0); // Remove empty carts
+
+    res.json(filteredCarts);
   } catch (error) {
     res.status(500).json({ message: 'Error searching cart', error: error.message });
   }

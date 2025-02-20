@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../Model/User');
+const bcrypt = require('bcrypt');
+
 
 // Get all users
 router.get('/', async (req, res) => {
@@ -149,7 +151,7 @@ router.get('/order-history/:id', async (req, res) => {
 });
   
 //  Search Users (By Name, Email, or Role)
-router.get('/search', async (req, res) => {
+router.get('/find/search', async (req, res) => {
   try {
     const { name, email, role } = req.query;
     let query = {};

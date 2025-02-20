@@ -9,6 +9,7 @@ const review = require('./Routes/review')
 const promotion = require('./Routes/promotion')
 const express = require('express');
 const bodyParser = require('body-parser');
+
 require('dotenv').config()
 
 const atlasUrl = "mongodb+srv://testuser:TestUser123@cluster0.j5hpx.mongodb.net/ecommerce_db";
